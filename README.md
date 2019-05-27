@@ -1,6 +1,8 @@
 #### converter
 javascript conmunicates to java with [js-to-java](https://github.com/node-modules/js-to-java) need special schemas, we need pretreat javascript type then wo can use `js-to-java` encode.
 
+[![Build Status](https://travis-ci.org/shinken008/converter.svg?branch=master)](https://travis-ci.org/shinken008/converter)
+
 #### Install
 ```sh
 $ npm install converter

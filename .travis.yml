@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - '8.12.0'
+script:
+  - npm build:test
+  - npm test
+  - npm run build
+deploy:
+  provider: npm
+  email: shinken008@gmail.com
+  skip_cleanup: true
+  api_key:
+    secure: todo
+  on:
+    tags: true

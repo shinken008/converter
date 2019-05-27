@@ -1,0 +1,3 @@
+--reporter spec
+--watch-extensions ts
+test/**/*.spec.js

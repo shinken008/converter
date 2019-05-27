@@ -1,0 +1,36 @@
+{
+  "name": "converter",
+  "version": "0.0.1",
+  "description": "Accoding to data type convert data into js-to-java format.",
+  "files": [
+    "index.js",
+    "lib"
+  ],
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha --opts mocha.opts",
+    "quick-build": "tsc --pretty",
+    "build:test": "tsc -p tsconfig.test.json"
+  },
+  "keywords": [
+    "js",
+    "java",
+    "typescript",
+    "js-to-java"
+  ],
+  "author": "shinken008@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^12.0.2",
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "ts-node": "^8.1.0",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "long": "^4.0.0",
+    "reflect-metadata": "^0.1.13"
+  }
+}

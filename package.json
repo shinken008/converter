@@ -1,7 +1,7 @@
 {
   "name": "converter",
-  "version": "0.0.1",
-  "description": "Accoding to data type convert data into js-to-java format.",
+  "version": "0.1.1",
+  "description": "Convert data values by data type.",
   "files": [
     "index.js",
     "lib"

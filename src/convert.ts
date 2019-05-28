@@ -6,8 +6,15 @@
  */
 import 'reflect-metadata';
 import { metadataKey } from './utils/types';
+import { type } from './convertWithType';
 
-function Convert(config) {
+export interface ConfigOption {
+  type: type, // primitives data types
+  required?: boolean, // param is required or not
+  message?: string, // param is required throw error message
+}
+
+function convert(config: { [key: string]: ConfigOption } | ConfigOption) {
   return function (target, propertyKey, parameterIndex) {
     const existMetadataValue = Reflect.getOwnMetadata(metadataKey, target) || new Map()
     const metadataValue = existMetadataValue.set(parameterIndex, config)
@@ -15,4 +22,4 @@ function Convert(config) {
   }
 }
 
-export default Convert
+export default convert

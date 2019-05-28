@@ -1,24 +1,35 @@
-/**
- * @converter()
- * method() {
- *  @convert()
- * }
- */
-
 import 'reflect-metadata';
-import { metadataKey } from "./utils/types";
-import { deepClone, transformLongType } from "./utils/index";
+import { metadataKey } from './utils/types';
+import { deepClone } from './utils/index';
+import convertFunc from './convertWithType';
+import { ConfigOption } from './convert';
 
+let convertWithType = convertFunc
 const toString = Object.prototype.toString
 
+// Custom your convert type function
+function init(customConvertFunc?: (value: any, type: any, required?: boolean | undefined, message?: string | undefined) => any) {
+  convertWithType = customConvertFunc || convertFunc
+}
+
+// reset convert type function
+function reset() {
+  convertWithType = convertFunc
+}
+
 // principle: transform data type with parameter value and return new data.
-function transform(target, config) {
+function transform(target, config: { [key: string]: ConfigOption | any } | ConfigOption) {
   const targetType = toString.call(target).slice(8, -1)
   let nextValue = deepClone(target) // use deep clone
   switch (targetType) {
     case 'Object':
       Object.keys(target).forEach(key => {
-        nextValue[key] = convertWithType(target[key], config[key].type)
+        nextValue[key] = convertWithType(
+          target[key],
+          config[key].type,
+          config[key].required,
+          config[key].message || `${key} is required`
+        )
       })
       break;
     case 'Array':
@@ -28,62 +39,14 @@ function transform(target, config) {
       })
       break;
     default:
-      nextValue = convertWithType(target, config.type)
-      break;
-  }
-  return nextValue
-}
-
-function convertWithType(value, type) {
-  let nextValue = value
-  switch (type) {
-    case 'number':
-      if (value === '' || value === null || value === undefined) {
-        nextValue = null
-      } else {
-        nextValue = +value
-      }
-      break;
-    case 'string':
-      if (value === null || value === undefined) {
-        nextValue = null
-      } else {
-        nextValue = `${value}`
-      }
-      break;
-    case 'boolean':
-      if (value === '' || value === null || value === undefined) {
-        nextValue = null
-      } else if (value === 'false') {
-        nextValue = false
-      } else {
-        nextValue = !!value
-      }
-      break;
-    case 'bigDecimal':
-      if (value === '' || value === null || value === undefined) {
-        nextValue = null
-      } else {
-        nextValue = { value: `${value}` }
-      }
-      break;
-    case 'long':
-      if (value === '' || value === null || value === undefined) {
-        nextValue = null
-      } else {
-        nextValue = transformLongType(value)
-      }
-      break;
-    case 'date':
-      if (value === '' || value === null || value === undefined) {
-        nextValue = null
-      } else if (new Date(value).toLocaleTimeString() === 'Invalid Date') {
-        throw new Error('Convert data to date type error: Invalid Date')
-      } else {
-        nextValue = new Date(value)
-      }
-      break;
-    default:
+      // compatible with old mode like `@convert({ id: { type: 'number' } }) id: number`,
+      config = typeof config.type === 'string' ? config : config[Object.keys(config)[0]]
+      nextValue = convertWithType(
+        target,
+        config.type,
+        config.required,
+        config.message || `parameter is required`
+      )
       break;
   }
   return nextValue
@@ -111,4 +74,6 @@ function converter() {
   }
 }
 
+converter.init = init
+converter.reset = reset
 export default converter

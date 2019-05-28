@@ -1,6 +1,6 @@
-import { expect } from 'chai'
-import convert from './convert'
-import converter from './converter'
+import { expect } from 'chai';
+import convert from './convert';
+import converter from './converter';
 
 describe('converter', () => {
   it('convert primitives data type, like number, string, boolean', () => {
@@ -13,6 +13,7 @@ describe('converter', () => {
         @convert({ type: 'bigDecimal' }) bigDecimal: any,
         @convert({ type: 'long' }) long: any,
         @convert({ type: 'date' }) date: any,
+        @convert({ old: { type: 'number' } }) old: any,
       ) {
         return JSON.stringify({
           number: num,
@@ -21,6 +22,7 @@ describe('converter', () => {
           bigDecimal: bigDecimal,
           long: long,
           date: date,
+          old,
         })
       }
     }
@@ -32,7 +34,8 @@ describe('converter', () => {
       'false',
       33,
       '111112222233333',
-      '2019-01-01 00:00:00'
+      '2019-01-01 00:00:00',
+      '44',
     )).equals(JSON.stringify({
       number: 1,
       string: '2',
@@ -40,6 +43,7 @@ describe('converter', () => {
       bigDecimal: { value: '33' },
       long: 111112222233333,
       date: new Date('2019-01-01 00:00:00'),
+      old: 44,
     }))
   })
 
@@ -122,5 +126,69 @@ describe('converter', () => {
       long: 111112222233333,
       date: new Date('2019-01-01 00:00:00'),
     }]))
+  })
+
+  it('Custom convert type function', () => {
+    function convertWithType(value, type) {
+      let nextValue = value
+      switch (type) {
+        case 'number':
+          nextValue = +value
+          break;
+        }
+      return nextValue
+    }
+    converter.init(convertWithType)
+    class Car {
+      @converter()
+      run(
+        @convert({
+          type: 'number',
+        }) id: any,
+      ) {
+        return id
+      }
+    }
+
+    const ferrari = new Car();
+    expect(ferrari.run('1')).equal(1)
+    converter.reset()
+  })
+
+  it('Throw required message', () => {
+    class Car {
+      @converter()
+      run(
+        @convert({
+          type: 'number',
+          required: true,
+          message: 'id不能为空'
+        }) id: any,
+        @convert({
+          id: {
+            type: 'number',
+            required: true,
+          }
+        }) obj: any
+      ) {
+        return id
+      }
+    }
+
+    const ferrari = new Car();
+    let message1
+    let message2
+    try {
+      ferrari.run('', { id: '1' })
+    } catch (error) {
+      message1 = error.message
+    }
+    expect(message1).equal('id不能为空')
+    try {
+      ferrari.run('1', { id: '' })
+    } catch (error) {
+      message2 = error.message
+    }
+    expect(message2).equal('id is required')
   })
 })

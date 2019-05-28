@@ -3,6 +3,7 @@ converter
 Javascript conmunicates to java with [js-to-java](https://github.com/node-modules/js-to-java) need special schemas, we will preprocess data (if you need a number but get a string parameter) then we can use `js-to-java` wrap js object to java object.
 
 [![Build Status](https://travis-ci.org/shinken008/converter.svg?branch=master)](https://travis-ci.org/shinken008/converter)
+[![npm version](https://badge.fury.io/js/converter-z.svg)](http://badge.fury.io/js/converter-z)
 
 ## Install
 ```sh
@@ -52,6 +53,32 @@ method(
 ```
 
 ### Custom your convert type function or you can create a issue
+```ts
+function convertWithType(value, type) {
+      let nextValue = value
+      switch (type) {
+        case 'number':
+          nextValue = +value
+          break;
+        }
+      return nextValue
+    }
+    converter.init(convertWithType) // init convert type function
+    class Car {
+      @converter()
+      run(
+        @convert({
+          type: 'number',
+        }) id: any,
+      ) {
+        return id
+      }
+    }
+
+    const ferrari = new Car();
+    ferrari.run('1') // 1
+    converter.reset() // if you need clear config
+  ```
 
 ### Project progress
 - [ ] Converter develop
@@ -60,6 +87,7 @@ method(
   - [x] Convert shallow object
   - [x] Convert object in array
   - [x] Custom convert type function
+  - [ ] More
 
 ## License
 

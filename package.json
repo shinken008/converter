@@ -1,12 +1,13 @@
 {
   "name": "converter-z",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Convert data values by data type.",
   "files": [
     "index.js",
     "lib"
   ],
-  "main": "src/index.js",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "scripts": {
     "test": "mocha --opts mocha.opts",
     "build": "tsc -p tsconfig.build.json",

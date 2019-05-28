@@ -1,2 +1,2 @@
-export { default as Convert } from './convert'
-export { default as Converter } from './converter'
+export { default as convert } from './convert'
+export { default as converter } from './converter'

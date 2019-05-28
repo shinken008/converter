@@ -6,7 +6,7 @@ Javascript conmunicates to java with [js-to-java](https://github.com/node-module
 
 ## Install
 ```sh
-$ npm install type-converter
+$ npm install converter-z
 ```
 ## Usage
 ### Convert primitives data type, like number, string, boolean, and more.

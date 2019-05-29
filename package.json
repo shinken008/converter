@@ -20,7 +20,14 @@
     "typescript",
     "js-to-java"
   ],
-  "author": "shinken008@gmail.com",
+  "author": "Shinken <shinken008@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/shinken008/converter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shinken008/converter"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.1.7",

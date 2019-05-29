@@ -68,7 +68,7 @@ function converter() {
   return function (target, propertyKey, descriptor) {
     const method = descriptor.value
     descriptor.value = function (...args) {
-      const meta = Reflect.getOwnMetadata(metadataKey, target)
+      const meta = Reflect.getOwnMetadata(metadataKey, target, propertyKey)
       const newArgs = args.map((arg, parameterIndex) => {
         const config = meta.get(parameterIndex)
         return transform(arg, config)

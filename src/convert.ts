@@ -16,7 +16,7 @@ export interface ConfigOption {
 
 function convert(config: { [key: string]: ConfigOption } | ConfigOption) {
   return function (target, propertyKey, parameterIndex) {
-    const existMetadataValue = Reflect.getOwnMetadata(metadataKey, target) || new Map()
+    const existMetadataValue = Reflect.getOwnMetadata(metadataKey, target, propertyKey) || new Map()
     const metadataValue = existMetadataValue.set(parameterIndex, config)
     Reflect.defineMetadata(metadataKey, metadataValue, target)
   }

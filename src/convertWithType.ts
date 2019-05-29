@@ -14,11 +14,9 @@ export default function convertWithType(value, type, required?: boolean, message
       }
       break;
     case 'string':
-      if (value === null || value === undefined) {
+      if (value === '' || value === null || value === undefined) {
         if (required) throw new Error(message)
         nextValue = null
-      } else if (value === '') {
-        if (required) throw new Error(message)
       } else {
         nextValue = `${value}`
       }

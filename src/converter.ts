@@ -20,19 +20,21 @@ function reset() {
 // principle: transform data type with parameter value and return new data.
 function transform(target, config: { [key: string]: ConfigOption | any } | ConfigOption) {
   const targetType = toString.call(target).slice(8, -1)
-  let nextValue = deepClone(target) // use deep clone
+  let nextValue = target
   switch (targetType) {
     case 'Object':
+      nextValue = deepClone(target) // use deep clone
       Object.keys(target).forEach(key => {
-        nextValue[key] = convertWithType(
+        nextValue[key] = config[key] ? convertWithType(
           target[key],
           config[key].type,
           config[key].required,
           config[key].message || `${key} is required`
-        )
+        ) : target[key]
       })
       break;
     case 'Array':
+      nextValue = deepClone(target) // use deep clone
       target.forEach((value, index) => {
         // convert primtives data type in array and convert object in array
         nextValue[index] = transform(target[index], config)
@@ -40,13 +42,15 @@ function transform(target, config: { [key: string]: ConfigOption | any } | Confi
       break;
     default:
       // compatible with old mode like `@convert({ id: { type: 'number' } }) id: number`,
-      config = typeof config.type === 'string' ? config : config[Object.keys(config)[0]]
-      nextValue = convertWithType(
-        target,
-        config.type,
-        config.required,
-        config.message || `parameter is required`
-      )
+      if (config) { // if not config convert return itself
+        config = typeof config.type === 'string' ? config : config[Object.keys(config)[0]]
+        nextValue = convertWithType(
+          target,
+          config.type,
+          config.required,
+          config.message || `parameter is required`
+        )
+      }
       break;
   }
   return nextValue
@@ -63,7 +67,7 @@ function transform(target, config: { [key: string]: ConfigOption | any } | Confi
 function converter() {
   return function (target, propertyKey, descriptor) {
     const method = descriptor.value
-    descriptor.value = function(...args) {
+    descriptor.value = function (...args) {
       const meta = Reflect.getOwnMetadata(metadataKey, target)
       const newArgs = args.map((arg, parameterIndex) => {
         const config = meta.get(parameterIndex)

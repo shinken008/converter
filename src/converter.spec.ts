@@ -4,7 +4,7 @@ import converter from './converter';
 
 describe('converter', () => {
   it('convert primitives data type, like number, string, boolean', () => {
-    class Car{
+    class Car {
       @converter()
       run(
         @convert({ type: 'number' }) num: any,
@@ -14,6 +14,7 @@ describe('converter', () => {
         @convert({ type: 'long' }) long: any,
         @convert({ type: 'date' }) date: any,
         @convert({ old: { type: 'number' } }) old: any,
+        notConvert: any,
       ) {
         return JSON.stringify({
           number: num,
@@ -23,6 +24,7 @@ describe('converter', () => {
           long: long,
           date: date,
           old,
+          notConvert,
         })
       }
     }
@@ -36,6 +38,7 @@ describe('converter', () => {
       '111112222233333',
       '2019-01-01 00:00:00',
       '44',
+      '55',
     )).equals(JSON.stringify({
       number: 1,
       string: '2',
@@ -44,6 +47,7 @@ describe('converter', () => {
       long: 111112222233333,
       date: new Date('2019-01-01 00:00:00'),
       old: 44,
+      notConvert: '55',
     }))
   })
 
@@ -84,6 +88,7 @@ describe('converter', () => {
       bigDecimal: 33,
       long: '111112222233333',
       date: '2019-01-01 00:00:00',
+      notConvert: '55',
     })).equal(JSON.stringify({
       id: 111,
       name: '222',
@@ -91,6 +96,7 @@ describe('converter', () => {
       bigDecimal: { value: '33' },
       long: 111112222233333,
       date: new Date('2019-01-01 00:00:00'),
+      notConvert: '55',
     }))
   })
 
@@ -118,6 +124,7 @@ describe('converter', () => {
       bigDecimal: 33,
       long: '111112222233333',
       date: '2019-01-01 00:00:00',
+      notConvert: '55',
     }])).equal(JSON.stringify([{
       id: 111,
       name: '222',
@@ -125,6 +132,7 @@ describe('converter', () => {
       bigDecimal: { value: '33' },
       long: 111112222233333,
       date: new Date('2019-01-01 00:00:00'),
+      notConvert: '55',
     }]))
   })
 
@@ -135,7 +143,7 @@ describe('converter', () => {
         case 'number':
           nextValue = +value
           break;
-        }
+      }
       return nextValue
     }
     converter.init(convertWithType)

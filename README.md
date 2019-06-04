@@ -52,33 +52,36 @@ method(
 }
 ```
 
-### Custom your convert type function or you can create a issue
+### Add a new convert type or rewrite convert type 
 ```ts
-function convertWithType(value, type) {
-      let nextValue = value
-      switch (type) {
-        case 'number':
-          nextValue = +value
-          break;
-        }
-      return nextValue
+converter.config({
+  type: 'increase',
+  adaptor: (value, required?: boolean, message?:string) => {
+    let nextValue = value
+    if (value === '' || value === null || value === undefined) {
+      if (required) throw new Error(message)
+      nextValue = null
+    } else {
+      nextValue = +value + 1
     }
-    converter.init(convertWithType) // init convert type function
-    class Car {
-      @converter()
-      run(
-        @convert({
-          type: 'number',
-        }) id: any,
-      ) {
-        return id
-      }
-    }
+    return nextValue
+  },
+})
+```
 
-    const ferrari = new Car();
-    ferrari.run('1') // 1
-    converter.reset() // if you need clear config
-  ```
+### Convert deep object
+```ts
+@converter()
+method(
+  @convert({
+    ids: {
+      id: { type: 'number' },
+    },
+  }) param: { ids: { id: number } },
+) {
+  ...
+}
+```
 
 ### Project progress
 - [ ] Converter develop
@@ -86,7 +89,8 @@ function convertWithType(value, type) {
   - [x] Convert primtives data type in array
   - [x] Convert shallow object
   - [x] Convert object in array
-  - [x] Custom convert type function
+  - [x] Add a new convert type or rewrite convert type 
+  - [ ] Convert deep object
   - [ ] More
 
 ## License

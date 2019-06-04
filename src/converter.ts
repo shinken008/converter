@@ -1,20 +1,23 @@
 import 'reflect-metadata';
 import { metadataKey } from './utils/types';
 import { deepClone } from './utils/index';
-import convertFunc from './convertWithType';
+import convertWithType, { convertAdaptorMap } from './convertWithType';
 import { ConfigOption } from './convert';
 
-let convertWithType = convertFunc
-const toString = Object.prototype.toString
-
-// Custom your convert type function
-function init(customConvertFunc?: (value: any, type: any, required?: boolean | undefined, message?: string | undefined) => any) {
-  convertWithType = customConvertFunc || convertFunc
+interface ConfigAdaptor {
+  type: string,
+  adaptor: (value: any, required?: boolean | undefined, message?: string | undefined) => any,
 }
 
-// reset convert type function
-function reset() {
-  convertWithType = convertFunc
+const toString = Object.prototype.toString
+
+// Add a new convert type or rewrite convert type 
+function config(confs: ConfigAdaptor | Array<ConfigAdaptor>) {
+  if (Array.isArray(confs)) {
+    confs.forEach(conf => convertAdaptorMap.set(conf.type, conf.adaptor))
+  } else {
+    convertAdaptorMap.set(confs.type, confs.adaptor)
+  }
 }
 
 // principle: transform data type with parameter value and return new data.
@@ -78,6 +81,5 @@ function converter() {
   }
 }
 
-converter.init = init
-converter.reset = reset
+converter.config = config
 export default converter

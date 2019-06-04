@@ -136,33 +136,6 @@ describe('converter', () => {
     }]))
   })
 
-  it('Custom convert type function', () => {
-    function convertWithType(value, type) {
-      let nextValue = value
-      switch (type) {
-        case 'number':
-          nextValue = +value
-          break;
-      }
-      return nextValue
-    }
-    converter.init(convertWithType)
-    class Car {
-      @converter()
-      run(
-        @convert({
-          type: 'number',
-        }) id: any,
-      ) {
-        return id
-      }
-    }
-
-    const ferrari = new Car();
-    expect(ferrari.run('1')).equal(1)
-    converter.reset()
-  })
-
   it('Throw required message', () => {
     class Car {
       @converter()
@@ -198,5 +171,34 @@ describe('converter', () => {
       message2 = error.message
     }
     expect(message2).equal('id is required')
+  })
+
+  it('Add a new convert type or rewrite convert type', () => {
+    converter.config({
+      type: 'number',
+      adaptor: (value, required?: boolean, message?: string) => {
+        let nextValue = value
+        if (value === '' || value === null || value === undefined) {
+          if (required) throw new Error(message)
+          nextValue = null
+        } else {
+          nextValue = +value + 1
+        }
+        return nextValue
+      },
+    })
+    class Car {
+      @converter()
+      run(
+        @convert({
+          type: 'number',
+        }) id: any,
+      ) {
+        return id
+      }
+    }
+
+    const ferrari = new Car();
+    expect(ferrari.run('1')).equal(2)
   })
 })

@@ -2,26 +2,35 @@ import { transformLongType } from "./utils/index";
 
 export type type = 'number' | 'string' | 'boolean' | 'bigDecimal' | 'long' | 'date'
 
-export default function convertWithType(value, type, required?: boolean, message?:string) {
-  let nextValue = value
-  switch (type) {
-    case 'number':
+const convertAdaptors = ([
+  {
+    type: 'number',
+    adaptor: (value, required?: boolean, message?: string) => {
+      let nextValue = value
       if (value === '' || value === null || value === undefined) {
         if (required) throw new Error(message)
         nextValue = null
       } else {
         nextValue = +value
       }
-      break;
-    case 'string':
+      return nextValue
+    },
+  }, {
+    type: 'string',
+    adaptor: (value, required?: boolean, message?: string) => {
+      let nextValue = value
       if (value === '' || value === null || value === undefined) {
         if (required) throw new Error(message)
         nextValue = null
       } else {
         nextValue = `${value}`
       }
-      break;
-    case 'boolean':
+      return nextValue
+    },
+  }, {
+    type: 'boolean',
+    adaptor: (value, required?: boolean, message?: string) => {
+      let nextValue = value
       if (value === '' || value === null || value === undefined) {
         if (required) throw new Error(message)
         nextValue = null
@@ -30,24 +39,36 @@ export default function convertWithType(value, type, required?: boolean, message
       } else {
         nextValue = !!value
       }
-      break;
-    case 'bigDecimal':
+      return nextValue
+    },
+  }, {
+    type: 'bigDecimal',
+    adaptor: (value, required?: boolean, message?: string) => {
+      let nextValue = value
       if (value === '' || value === null || value === undefined) {
         if (required) throw new Error(message)
         nextValue = null
       } else {
         nextValue = { value: `${value}` }
       }
-      break;
-    case 'long':
+      return nextValue
+    },
+  }, {
+    type: 'long',
+    adaptor: (value, required?: boolean, message?: string) => {
+      let nextValue = value
       if (value === '' || value === null || value === undefined) {
         if (required) throw new Error(message)
         nextValue = null
       } else {
         nextValue = transformLongType(value)
       }
-      break;
-    case 'date':
+      return nextValue
+    },
+  }, {
+    type: 'date',
+    adaptor: (value, required?: boolean, message?: string) => {
+      let nextValue = value
       if (value === '' || value === null || value === undefined) {
         if (required) throw new Error(message)
         nextValue = null
@@ -56,9 +77,19 @@ export default function convertWithType(value, type, required?: boolean, message
       } else {
         nextValue = new Date(value)
       }
-      break;
-    default:
-      break;
+      return nextValue
+    },
   }
+])
+
+const map = new Map()
+convertAdaptors.forEach(({ type, adaptor }) => {
+  map.set(type, adaptor)
+})
+
+export const convertAdaptorMap = map
+export default function convertWithType(value, type, required?: boolean, message?: string) {
+  const convertAdaptor = convertAdaptorMap.get(type) || value
+  let nextValue = convertAdaptor ? convertAdaptor(value, required, message) : value // if not exist adaptor return value
   return nextValue
 }

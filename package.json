@@ -1,6 +1,6 @@
 {
   "name": "converter-z",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Convert data values by data type.",
   "files": [
     "index.js",

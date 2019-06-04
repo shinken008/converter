@@ -1,6 +1,9 @@
 import 'reflect-metadata';
-declare function init(customConvertFunc?: (value: any, type: any, required?: boolean | undefined, message?: string | undefined) => any): void;
-declare function reset(): void;
+interface ConfigAdaptor {
+    type: string;
+    adaptor: (value: any, required?: boolean | undefined, message?: string | undefined) => any;
+}
+declare function config(confs: ConfigAdaptor | Array<ConfigAdaptor>): void;
 /**
  *
  * @Converter()
@@ -10,7 +13,6 @@ declare function reset(): void;
  */
 declare function converter(): (target: any, propertyKey: any, descriptor: any) => void;
 declare namespace converter {
-    var init: typeof init;
-    var reset: typeof reset;
+    var config: typeof config;
 }
 export default converter;

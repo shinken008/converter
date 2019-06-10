@@ -24,6 +24,9 @@ function config(confs: ConfigAdaptor | Array<ConfigAdaptor>) {
 function transform(target, config: { [key: string]: ConfigOption | any } | ConfigOption) {
   const targetType = toString.call(target).slice(8, -1)
   let nextValue = target
+  if (!config) { // if not config convert return itself
+    return nextValue
+  }
   switch (targetType) {
     case 'Object':
       nextValue = deepClone(target) // use deep clone
@@ -45,15 +48,13 @@ function transform(target, config: { [key: string]: ConfigOption | any } | Confi
       break;
     default:
       // compatible with old mode like `@convert({ id: { type: 'number' } }) id: number`,
-      if (config) { // if not config convert return itself
-        config = typeof config.type === 'string' ? config : config[Object.keys(config)[0]]
-        nextValue = convertWithType(
-          target,
-          config.type,
-          config.required,
-          config.message || `parameter is required`
-        )
-      }
+      config = typeof config.type === 'string' ? config : config[Object.keys(config)[0]]
+      nextValue = convertWithType(
+        target,
+        config.type,
+        config.required,
+        config.message || `parameter is required`
+      )
       break;
   }
   return nextValue
